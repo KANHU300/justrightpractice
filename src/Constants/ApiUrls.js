@@ -2,7 +2,7 @@ const ApiNames = {
     secretKey:`#B3tterPa$$c0d3!`,
     getCategoryWiseProducts: "admin/products/getCategoryWiseProducts",
     getBannerImages: "v1/users/getBannerImages",
-    getAllCategory: "https://testshopapi.justrightinc.com/v1/users/getAllCategory",
+    getAllCategory: "v1/users/getAllCategory",
     login_Url :'api/auth/login',
     login_Verify :'api/auth/verifyOtp',
     user_WishList :'v1/users/wishlist',

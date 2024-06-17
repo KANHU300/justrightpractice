@@ -3,6 +3,9 @@ import './App.css';
 import { Route, Routes } from "react-router-dom";
 import Layout from "./Pages/Layout/Layout";
 import Landing from './Pages/Landing/Landing';
+import ProductView from './Pages/ProductView/ProductView';
+import Filter from './Pages/FilterPge/Filter';
+// import ProductView from './Pages/ProductView/ProductView';
 function App() {
   return (
     <div >
@@ -10,6 +13,8 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Landing />} />
           <Route path="/landing" element={<Landing />} />
+          <Route path="/ProductView/:productId" element={<ProductView/>} />
+          <Route path="/Filter/:type/:id" element={<Filter/>} />
           {/* <Route path="/InsideProduct/:id" exact element={<InsideProduct />} />
           <Route path="/ProductView/:productId" element={<ProductView/>} />
           <Route path="/Filter/:type/:id" element={<Filter/>} />
