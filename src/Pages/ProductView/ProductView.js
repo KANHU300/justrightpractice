@@ -14,6 +14,7 @@ import ApiNames from "../../Constants/ApiUrls";
 import Pbrands from "../../Component/popularBrands/popularBrands";
 import SimilerProducts from "../../Component/SimilerProducts/SimilerProducts";
 import Welcome from "../../Component/Loaders/Welcome";
+import { useCart } from "../../Context/cartcontext";
 
 const ProductView = () => {
   const { productId } = useParams();
@@ -26,6 +27,16 @@ const ProductView = () => {
   const [getDec, setDec] = useState([]);
  const [loader,setLoader] = useState(true)
   const [quantity, setQuantity] = useState(1);
+
+
+  const {addToCart} = useCart();
+  
+  const handleAddtoCart = () =>{
+    const id = 'productId';
+    const type = 'product_type';
+    addToCart(id,type)
+
+  }
 
   useEffect(() => {
     // Fetch the product details using the productId
@@ -175,7 +186,7 @@ const ProductView = () => {
                         {getProduct.sellingPrice} AED
                       </p>
                       <p className="sellingPrice">
-                        M.R.P :{" "}
+                        M.R.P :
                         <span className="selingstrikg">
                           {getProduct.marketPrice} AED
                         </span>
@@ -219,7 +230,7 @@ const ProductView = () => {
                         </div>
                       </div>
                       <div className="add-to-cart-buttons">
-                        <button className="addcartbutton">Add to Cart</button>
+                        <button className="addcartbutton" onClick={handleAddtoCart}>Add to Cart</button>
                         <button className="buyitnowbutton">Buy it Now</button>
                       </div>
                     </>

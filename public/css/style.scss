@@ -574,11 +574,15 @@ body {
         @include sm {
           font-size: 8px;
         }
-        .nav-deals {
-          &:hover {
-            color: #ffc346;
+        .bottm-navItm{
+          text-decoration: none;
+          .nav-deals {
+            &:hover {
+              color: #ffc346;
+            }
           }
         }
+        
       }
       @include xsm {
         gap: 20px;

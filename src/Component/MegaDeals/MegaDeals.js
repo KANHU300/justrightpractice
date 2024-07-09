@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import Text2Title from "../Title/Text2Title";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Axios from "../../Utils/AxiosConfi";
 import ApiNames from "../../Constants/ApiUrls";
 
@@ -52,7 +52,7 @@ const MegaDeals = () => {
         {getItems.map((products, index) => (
           <div key={index} className="col-lg-6">
             {/* <div onClick={()=>addToCarts(products?.firstDetail?._id)} className="card MegaDeals-top"> */}
-            
+            <NavLink to={`ProductView/${products?._id}`}>
             <div className="card MegaDeals-top">
               <span className="card-topLeft-text">
                 {products?.firstDetail?.categoryName}
@@ -82,6 +82,7 @@ const MegaDeals = () => {
                 </div>
               </div>
             </div>
+            </NavLink>
           </div>
         ))}
       </div>

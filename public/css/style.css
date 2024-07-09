@@ -550,7 +550,10 @@ body {
     font-size: 8px;
   }
 }
-.bottom-nav .nav-content .dealsMenu-top .bottom-navItems .nav-deals:hover {
+.bottom-nav .nav-content .dealsMenu-top .bottom-navItems .bottm-navItm {
+  text-decoration: none;
+}
+.bottom-nav .nav-content .dealsMenu-top .bottom-navItems .bottm-navItm .nav-deals:hover {
   color: #ffc346;
 }
 @media (max-width: 575.98px) {

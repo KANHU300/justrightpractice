@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import Axios from "../../Utils/AxiosConfi";
 import ApiNames from "../../Constants/ApiUrls";
@@ -7,12 +7,44 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Accordion from "react-bootstrap/Accordion";
 import Form from "react-bootstrap/Form";
+import { useEffect, useState } from "react";
+import ProductItems from "../../Component/ProductItems/ProductItems";
 
 const Filter = () => {
-  const {id,type} = useParams();
+  const [filterprduct,setFilterproduct] = useState([])
+  const { id, type } = useParams();
+  const [pricechange ,setPricechange] = useState ([10,90])
+  // console.log(id,type)
+  useEffect(()=>{
+    const filterproducts = async()=>{
 
+      let filterBody ={
+        type: type,
+        id:id,
+        filters:[]
+      }
+      try {
+        let url = ApiNames.filterProducts;
+        const response = await Axios.post(url,filterBody);
+        
+      const  productlist = response.data.products;
+      console.log(productlist)
+      setFilterproduct(productlist);
+      
+       
+        
+      } catch (error) {
+        
+      }
 
-  
+    }
+    filterproducts ()
+  },[id, type])
+
+  const handlePriceChange = (value) =>{
+    setPricechange(value)
+  }
+
   return (
     <div>
       <div className="container">
@@ -31,15 +63,15 @@ const Filter = () => {
                 range
                 min={10}
                 max={90}
-                defaultValue={[1, 10]}
-                // onChange={(value) => setPriceRange1(value)}
+                // defaultValue={[10, 10]}
+                onChange={handlePriceChange}
               />
               <div className="slidePrices">
                 <label className="priceTxt">
-                  From:<span className="priceAccess"> 10 AED </span>{" "}
+                  From:<span className="priceAccess"> {pricechange[0]} </span>
                 </label>
                 <label className="priceTxt">
-                  To: <span className="priceAccess"> 100 AED </span>{" "}
+                  To: <span className="priceAccess">{pricechange[1]}</span>
                 </label>
               </div>
               <div className="accordionSection">
@@ -85,28 +117,28 @@ const Filter = () => {
                   alwaysOpen
                 >
                   <Accordion.Item className="acd-items" eventKey="0">
-                    <Accordion.Header></Accordion.Header>
+                    <Accordion.Header>color</Accordion.Header>
                     <Accordion.Body className=" acd-content">
-                      {["clear", "pink", "orange"].map((type, index) => (
+                      {["red", "pink", "orange"].map((type, index) => (
                         <div key={`${type}`} className="mb-3">
                           <Form.Check // prettier-ignore
                             type={type}
                             id={`${type}`}
-                            label={` ${type} ${index}`}
+                            label={type}
                           />
                         </div>
                       ))}
                     </Accordion.Body>
                   </Accordion.Item>
                   <Accordion.Item eventKey="1">
-                    <Accordion.Header>Accordion Item #2</Accordion.Header>
+                    <Accordion.Header>Brand</Accordion.Header>
                     <Accordion.Body>
-                      {["clear", "pink", "orange"].map((type, index) => (
+                      {["samsung", "apple", "orange"].map((type, index) => (
                         <div key={`${type}`} className="mb-3">
                           <Form.Check // prettier-ignore
                             type={type}
                             id={`${type}`}
-                            label={` ${type} ${index}`}
+                            label={` ${type} `}
                           />
                         </div>
                       ))}
@@ -135,30 +167,43 @@ const Filter = () => {
               </div>
               <div className="TotalProducts">
                 <label className="foundedproducts">
-                  We found <span className="counting">10</span> items for you!
+                  We found <span className="counting">{filterprduct.length}</span> items for you!
                 </label>
                 <div className="right-relevance">
-                <Dropdown className="relvence-Ddown">
-                                <Dropdown.Toggle variant="success" id="dropdown-basic" className="relvence-Inside">
-                                  <span className="upDwn-arrw">
-                                    <img src="/images/range.svg" className="ranges" />
-                                    <span className="relvance-filterTitle">low to high</span>
-                                  </span>
-                                  <span className="upArrow-Icn">
+                  <Dropdown className="relvence-Ddown">
+                    <Dropdown.Toggle
+                      variant="success"
+                      id="dropdown-basic"
+                      className="relvence-Inside"
+                    >
+                      <span className="upDwn-arrw">
+                        {/* <img src="/images/range.svg" className="ranges" /> */}
+                        <span className="relvance-filterTitle">
+                          low to high
+                        </span>
+                      </span>
+                      {/* <span className="upArrow-Icn">
                                     <i className="fas fa-angle-down arwUpIcon"></i>
-                                  </span>
-                                </Dropdown.Toggle>
+                                  </span> */}
+                    </Dropdown.Toggle>
 
-                                <Dropdown.Menu className="Relvence-Top">
-                                  <Dropdown.Item  className="relvence-Dropitems" >Price: Low to High</Dropdown.Item>
-                                  <Dropdown.Item className="relvence-Dropitems" >Price: High to Low</Dropdown.Item>
-                                  {/* <Dropdown.Item onClick={() => fetFilterProducts('lowTohighRating')} className="relvence-Dropitems" >Rating: Low to High</Dropdown.Item>
+                    <Dropdown.Menu className="Relvence-Top">
+                      <Dropdown.Item className="relvence-Dropitems" on>
+                        Price: Low to High
+                      </Dropdown.Item>
+                      <Dropdown.Item className="relvence-Dropitems">
+                        Price: High to Low
+                      </Dropdown.Item>
+                      {/* <Dropdown.Item onClick={() => fetFilterProducts('lowTohighRating')} className="relvence-Dropitems" >Rating: Low to High</Dropdown.Item>
                                 <Dropdown.Item onClick={() => fetFilterProducts('highTolowRating')} className="relvence-Dropitems" >Rating: High to Low</Dropdown.Item> */}
-                                </Dropdown.Menu>
-                              </Dropdown>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </div>
               </div>
-              <div className="product-items"></div>
+              <div className="product-items">
+              <ProductItems productObj={filterprduct}  />
+
+              </div>
             </div>
           </div>
         </div>

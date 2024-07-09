@@ -160,7 +160,7 @@ const handleClose = () => setShow(false);
         const response = await Axios.post(`${api}`, { name: getName });
         let desryptionInfo = await decryptData(response.data.data);
         setCountryList(desryptionInfo);
-        console.log("bjdjdf", desryptionInfo);
+        // console.log("bjdjdf", desryptionInfo);
       } catch (error) {
         console.error("Error checking login status:", error);
       }
@@ -324,7 +324,7 @@ const handleClose = () => setShow(false);
             <div className="dealsMenu-top">
               <ul className="bottom-navItems">
                 {getAllCategorys.slice(0, 6).map((value, index) => (
-                  <NavLink to={`/filter/1/${value._id}`}>
+                  <NavLink className="bottm-navItm" to={`/filter/1/${value._id}`}>
                   <li key={index} className="nav-deals">
                     {value?.categoryName}
                   </li>

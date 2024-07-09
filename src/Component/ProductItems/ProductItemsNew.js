@@ -4,8 +4,8 @@
 
 import { useEffect, useState } from "react";
 import ApiNames from "../../Constants/ApiUrls";
-import Axios from "../../utils/AxiosConfi";
-import { useCart } from "../../Context/CartContext";
+import Axios from "../../Utils/AxiosConfi";
+// import { useCart } from "../../Context/CartContext";
 import { Navigate, useNavigate } from "react-router-dom";
 const ProductItemsNew = (props) => {
   const [onDataReturn, setonDataReturn] = useState('');
