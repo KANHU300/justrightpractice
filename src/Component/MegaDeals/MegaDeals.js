@@ -6,9 +6,9 @@ import Axios from "../../Utils/AxiosConfi";
 import ApiNames from "../../Constants/ApiUrls";
 
 const MegaDeals = () => {
-  let navigation = useNavigate();
+  // let navigation = useNavigate();
   const [getItems, setItems] = useState([]);
-  const [titleThree, setTitleThree] = useState([]);
+  const [titleThree, setTitleThree] = useState("");
 
   useEffect(() => {
     const getAllCartProduct = async () => {
@@ -52,7 +52,7 @@ const MegaDeals = () => {
         {getItems.map((products, index) => (
           <div key={index} className="col-lg-6">
             {/* <div onClick={()=>addToCarts(products?.firstDetail?._id)} className="card MegaDeals-top"> */}
-            <NavLink to={`ProductView/${products?._id}`}>
+            <NavLink to={`ProductView/${products?.productId}`}>
             <div className="card MegaDeals-top">
               <span className="card-topLeft-text">
                 {products?.firstDetail?.categoryName}

@@ -8,6 +8,10 @@ import Axios from "../../Utils/AxiosConfi";
 import ApiNames from "../../Constants/ApiUrls";
 import decryptData from "../../Utils/crypto";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useCart } from "../../Context/cartcontext";
+import CartOffCanvas from "../CartOfCanvas/CartOffCanvas";
+import { useLocation } from "react-router-dom";
+
 
 function Header() {
   const [getAllCategorys, setAllCategory] = useState([]);
@@ -22,19 +26,34 @@ function Header() {
   });
   const [getName, setName] = useState("");
   const [getcountryList, setCountryList] = useState([]);
-const [login ,setLogin]= useState(false)
-const [show, setShow] = useState(false);
-const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const [login, setLogin] = useState(false);
+  const [show, setShow] = useState(false);
+  const [cartProduct, setCartProduct] = useState([]);
+  const [cartCount, setCartCount] = useState("0");
+  const {cartItems,addToWishlist} = useCart();
+  const [wishlistCount, setWishlistCount] = useState('0');
   
+
+  
+  
+  const handleClose = () => setShow(false);
+
+  
+    const handleShow = () => setShow(true);
+
+
+  
+
   useEffect(() => {
     const getAllCategory = async () => {
       try {
         let url = ApiNames.getAllCategory;
         const response = await Axios.get(`${url}`);
-        let allCatInfo = await decryptData(response.data);
-        setAllCategory(allCatInfo);
-        console.log(allCatInfo);
+        // let allCatInfo = await decryptData(response.data);
+        // let allCatInfo = await(response.data);
+        
+        setAllCategory(response.data);
+        // console.log(allCatInfo);
       } catch (error) {
         console.log(error);
       }
@@ -50,72 +69,52 @@ const handleClose = () => setShow(false);
     try {
       let url = ApiNames.login_Url;
       const response = await Axios.post(url, sendData);
-      console.log("login response",response);
-      setIsgetOtp(true)
+      console.log("login response", response);
+      setIsgetOtp(true);
       const userId = response.data._id;
-      localStorage.setItem("userId",userId); 
+      localStorage.setItem("userId", userId);
       console.log("User ID set in local storage:", userId);
     } catch (error) {
       console.log(error);
     }
   };
-  // const Otpvrifylogin = async () => {
-  //   let userId = localStorage.getItem("userId");
-  //   console.log("Retrieved User ID from local storage:", userId); // Debug log
-  //   let sendData = {
-  //     _id: userId,
-  //     otp: otp,
-  //   };
-  //   try {
-  //     let url = ApiNames.login_Verify;
-  //     const response = await Axios.post(url, sendData);
-  //     console.log(response);
-  //     if (response.data.token) {
-  //       localStorage.setItem("token", response.data.token);
-  //       console.log("Token set in local storage:", response.data.token); // Debug log
-  //     }
-  //     handleCloseLogin();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+
   const Otpvrifylogin = async () => {
     let userId = localStorage.getItem("userId");
     console.log("Retrieved User ID from local storage:", userId); // Debug log
-  
+
     if (!userId) {
       console.error("User ID is missing");
       return;
     }
-  
+
     let sendData = {
       _id: userId,
       otp: otp,
     };
-  
+
     try {
       let url = ApiNames.login_Verify;
       const response = await Axios.post(url, sendData);
       console.log("Server Response:", response);
-  
+
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("isLoggedIn", "true"); // Save login state
         console.log("Token set in local storage:", response.data.token); // Debug log
       }
-  
+
       handleCloseLogin();
-      setLogin(true)
+      setLogin(true);
     } catch (error) {
       console.error("Error during OTP verification:", error);
-    
     }
   };
-  const logOut =()=>{
+  const logOut = () => {
     localStorage.clear();
-  setLogin(false);
-  setIsgetOtp(false);
-  }
+    setLogin(false);
+    setIsgetOtp(false);
+  };
 
   const handlePhoneNumberSubmit = (e) => {
     e.preventDefault();
@@ -123,19 +122,19 @@ const handleClose = () => setShow(false);
   };
   const handleOtpSubmit = (e) => {
     e.preventDefault();
-    Otpvrifylogin()
+    Otpvrifylogin();
   };
   const handleCloseCanvas = () => setShowCanvas(false);
   const handleShowCanvas = () => setShowCanvas(true);
 
-  const handleCloseLogin = () =>{
+  const handleCloseLogin = () => {
     setShowLogin(false);
-    setPhone()
+    setPhone();
     setIsgetOtp();
-  } 
+  };
   const handleShowLogin = () => {
     setShowLogin(true);
-    setIsgetOtp(false);  // Reset isgetOtp to false when opening the login modal
+    setIsgetOtp(false); // Reset isgetOtp to false when opening the login modal
   };
 
   useEffect(() => {
@@ -148,31 +147,61 @@ const handleClose = () => setShow(false);
         setPhone(response.data.profile.mobile);
         setCountryCode(response.data?.profile?.countryCode);
       } catch (error) {
-        console.error("Error checking login status:", error);
+        console.log("Error checking login status:", error);
       }
     };
     getCountriesList();
   }, []);
-  useEffect(() => {
-    const getProfileDetails = async () => {
-      try {
-        let api = ApiNames.Inssearch;
-        const response = await Axios.post(`${api}`, { name: getName });
-        let desryptionInfo = await decryptData(response.data.data);
-        setCountryList(desryptionInfo);
-        // console.log("bjdjdf", desryptionInfo);
-      } catch (error) {
-        console.error("Error checking login status:", error);
-      }
-    };
-    getProfileDetails();
-  }, [getName]);
+
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     if (isLoggedIn) {
       setLogin(true);
     }
   }, []);
+
+  
+  
+  useEffect(() => {
+    const getCartItemslist = async () => {
+      try {
+        let url = ApiNames.user_getWishListCount;
+        const response = await Axios.get(url);
+        
+        
+        // let desryptioncart = await (response.data );
+
+        // console.log("Decrypted Cart Items", desryptioncart);
+        // response.data = desryptioncart
+        setCartProduct(response.data.cartItemDetails);
+        
+        
+        setCartCount(response.data.cartCount);
+        setWishlistCount(response.data.wishListCount)
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      }
+    };
+
+    getCartItemslist();
+}, [cartItems,addToWishlist]);
+
+const location = useLocation();
+useEffect(() => {
+  const handleCustomEvent = () => {
+    if (location.pathname === "/viewcart") {
+      setShow(false);
+    }else(setShow(true))
+    
+  };
+  document.addEventListener('customSideEvent', handleCustomEvent);
+  return () => {
+    document.removeEventListener('customSideEvent', handleCustomEvent);
+  };
+}, []);
+
+
+
   return (
     <>
       <div className="header">
@@ -205,30 +234,31 @@ const handleClose = () => setShow(false);
                     <img src="/images/search.svg" className="icooons" alt="" />
                   </NavLink>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <NavLink className="nav-link menubar-items" to="/filter">
                     <span className="Item-texts">Filter</span>
                   </NavLink>
-                </li>
+                </li> */}
                 <li className="nav-item">
                   <NavLink className="nav-link menubar-items" to="/wishlist">
                     <img src="/images/heart.svg" className="icooons" alt="" />
-                    <span className="Item-texts">Wishlist</span>
+                    <span className="Item-texts">Wishlist({wishlistCount})</span>
+                    {/* <span className="item-count">{wishlistCount}</span> */}
                   </NavLink>
                 </li>
-                <li className="nav-item"onClick={handleShow}>
-                  <NavLink  className="nav-link menubar-items">
+                <li className="nav-item" onClick={handleShow}>
+                  <NavLink className="nav-link menubar-items">
                     <img
                       src="/images/bag-2-svgrepo-com.svg"
                       className="icooons"
                       alt=""
                     />
                     <span className="Item-texts">Cart</span>
-                    <span className="item-count">0</span>
+                    <span className="item-count">{cartCount}</span>
                   </NavLink>
                 </li>
-                {
-                  login ?(   <li className="nav-item">
+                {login ? (
+                  <li className="nav-item">
                     <div className="dropdown">
                       <button
                         className="btn btn-secondary dropdown-toggle login-menu"
@@ -244,8 +274,8 @@ const handleClose = () => setShow(false);
                         Profile
                       </button>
                       <ul className="dropdown-menu dropdown-menu-end login-Ddown">
-                        <li >
-                          <a className="dropdown-item profile-logout" href="#">
+                        <li>
+                          <a className="dropdown-item profile-logout" >
                             <img
                               src="/images/menubar/profile-svgrepo-com.svg"
                               className="icooons"
@@ -254,7 +284,7 @@ const handleClose = () => setShow(false);
                             Profile
                           </a>
                         </li>
-                        <li >
+                        <li>
                           <a
                             className="dropdown-item profile-logout "
                             alt="..."
@@ -270,7 +300,7 @@ const handleClose = () => setShow(false);
                         <li onClick={logOut}>
                           <a
                             className="dropdown-item profile-logout border-botom"
-                            href="#"
+                            
                             alt="..."
                           >
                             <span className="logout-icon">
@@ -281,7 +311,9 @@ const handleClose = () => setShow(false);
                         </li>
                       </ul>
                     </div>
-                  </li>):( <li className="nav-item">
+                  </li>
+                ) : (
+                  <li className="nav-item">
                     <a
                       className="nav-link menubar-items"
                       onClick={handleShowLogin}
@@ -294,9 +326,8 @@ const handleClose = () => setShow(false);
                       />
                       <span className="Item-texts">Login</span>
                     </a>
-                  </li>)
-                }
-               
+                  </li>
+                )}
               </ul>
             </div>
           </div>
@@ -323,11 +354,15 @@ const handleClose = () => setShow(false);
             </div>
             <div className="dealsMenu-top">
               <ul className="bottom-navItems">
-                {getAllCategorys.slice(0, 6).map((value, index) => (
-                  <NavLink className="bottm-navItm" to={`/filter/1/${value._id}`}>
-                  <li key={index} className="nav-deals">
-                    {value?.categoryName}
-                  </li>
+                {getAllCategorys.slice(0, 4).map((value, index) => (
+                  <NavLink
+                  key={index}
+                    className="bottm-navItm"
+                    to={`/filter/1/${value._id}`}
+                  >
+                    <li key={index} className="nav-deals">
+                      {value?.categoryName}
+                    </li>
                   </NavLink>
                 ))}
                 <li className="nav-deals" onClick={handleShowCanvas}>
@@ -432,9 +467,9 @@ const handleClose = () => setShow(false);
                                   />
                                 </div>
                               </li>
-                              {getcountryList.map((value, index) => (
+                              {/* {getcountryList.map((value, index) => (
                                 <li className="dropdown-flag-list" key={index}>
-                                  <a className="dropdown-item" href="#">
+                                  <a className="dropdown-item" >
                                     <img
                                       src={`data:image/png;base64,${value.flag}`}
                                       alt=""
@@ -445,7 +480,7 @@ const handleClose = () => setShow(false);
                                     </span>
                                   </a>
                                 </li>
-                              ))}
+                              ))} */}
 
                               {/* Add more list items as needed */}
                             </ul>
@@ -465,11 +500,7 @@ const handleClose = () => setShow(false);
                     </div>
 
                     <div className="submit-button">
-                      <button
-                        type="submit"
-                        className="btn register-btn"
-                        
-                      >
+                      <button type="submit" className="btn register-btn">
                         Send Otp
                       </button>
                     </div>
@@ -480,14 +511,15 @@ const handleClose = () => setShow(false);
           )}
         </Modal.Body>
       </Modal>
-      <Offcanvas show={show} onHide={handleClose} placement="end">
-        <Offcanvas.Header closeButton>
-          <Offcanvas.Title>CartItems</Offcanvas.Title>
-        </Offcanvas.Header>
-        <Offcanvas.Body>
-       cart items will come header
-        </Offcanvas.Body>
-      </Offcanvas>
+
+      {/* cart items   modal */}
+      <CartOffCanvas
+        show={show}
+        handleClose={handleClose}
+        cartProduct={cartProduct}
+        cartCount={cartCount}
+      />
+      
     </>
   );
 }

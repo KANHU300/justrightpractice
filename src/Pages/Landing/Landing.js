@@ -12,15 +12,19 @@ import Pbrands from "../../Component/popularBrands/popularBrands"
 
 // import ApiNames from "../../Constants/ApiUrls";
 import decryptData from "../../Utils/crypto";
-import axios from "axios";
+
 import RecommendedProducts from "../../Component/RecommendedProducts/RecommendedProducts";
 import ApiNames from "../../Constants/ApiUrls";
 import Welcome from "../../Component/Loaders/Welcome";
+import { useCart } from "../../Context/cartcontext";
 
 const Landing = () => {
   
   const [newArrival, setNewArrival] = useState([]);
   const [blogsData, setBlogsData] = useState([]);
+  const { addToCart, updateCart, addToWishlist, updateWishlist } = useCart();
+
+  
   useEffect(() => {
     window.scroll({
       top: 0,
@@ -35,36 +39,41 @@ const [getIsLoader, SetIsLoader] = useState(true);
     const getNewArivals = async () => {
       try {
         // let api = ApiNames.Product_Newarrivels
-        const response = await axios.get(
-          "https://testshopapi.justrightinc.com/v1/users/getNewArraivals"
+        let api = ApiNames.Product_Newarrivels
+        const response = await Axios.get(
+          `${api}`
         );
 
-        let decryp = await decryptData(response.data.data);
+        
+        // let decryp = await decryptData(response.data.data);
         // setTimeout(()=>{
         //   SetIsLoader(false)
         // },500)
+        let decryp = await decryptData(response.data.data);
 
         setNewArrival(decryp);
-        console.log(decryp);
+        // console.log("res",decryp)
       } catch (error) {
         console.log(error);
       }
     };
     getNewArivals();
-  }, []);
+  }, [updateCart]);
 
   // blog data logics below ////
   useEffect(() => {
     const getBlogs = async () => {
       let url = ApiNames.getBlogs;
       const response = await Axios.get(`${url}`);
-      let decrptBlog = await decryptData(response.data?.data);
-      setBlogsData(decrptBlog);
+      // let decrptBlog = await decryptData(response.data?.data);
+      setBlogsData(response.data?.data || []);
       SetIsLoader(false)
-      console.log(decrptBlog);
+      // console.log(decrptBlog);
     };
     getBlogs();
   }, []);
+
+
   return (<>
   {
     getIsLoader ? (<div>
@@ -120,23 +129,27 @@ const [getIsLoader, SetIsLoader] = useState(true);
           <p className="blog-subtitle">Stay informed with engaging articles</p>
 
           <div className="row">
-            {blogsData.slice(0, 4).map((products, index) => (
-              <div key={index} className="col-md-3">
-                <div className="card blog-card">
-                  <img
-                    src={products?.image}
-                    className="card-img-top blog-image"
-                    alt="..."
-                  />
-                  <div className="card-body blog-body">
-                    <p className="card-text blog-text">
-                      {products?.title.slice(0, 60)}
-                    </p>
-                  </div>
-                </div>
+                {blogsData && blogsData.length > 0 ? (
+                  blogsData.slice(0, 4).map((products, index) => (
+                    <div key={index} className="col-md-3">
+                      <div className="card blog-card">
+                        <img
+                          src={products?.image}
+                          className="card-img-top blog-image"
+                          alt="..."
+                        />
+                        <div className="card-body blog-body">
+                          {/* <p className="card-text blog-text">
+                            {products?.title.slice(0, 60)}
+                          </p> */}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>No blogs available.</p>
+                )}
               </div>
-            ))}
-          </div>
         </div>
       </div>
       <Pbrands />

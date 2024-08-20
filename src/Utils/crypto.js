@@ -1,4 +1,4 @@
-// utils/crypto.js
+
 import CryptoJS from 'crypto-js';
 import ApiNames from '../Constants/ApiUrls';
 
@@ -8,10 +8,17 @@ const encryptData = (data) => {
     return encryptedData;
 };
 
+// Function to decrypt data
 const decryptData = (data) => {
-    const bytes = CryptoJS.AES.decrypt(data, ApiNames.secretKey);
-    const decryptedData = bytes.toString(CryptoJS.enc.Utf8)
-    return JSON.parse(decryptedData);
+    try {
+        const bytes = CryptoJS.AES.decrypt(data, ApiNames.secretKey);
+        const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+        return JSON.parse(decryptedData);
+    } catch (error) {
+        console.error('Error decrypting data:', error);
+        return null; // Or handle the error appropriately
+    }
 };
-
 export default decryptData;
+// export { encryptData, decryptData };
+

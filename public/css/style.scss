@@ -429,7 +429,7 @@ body {
   background-color: var(--secondnavbg);
   width: 100%;
   height: auto;
-  margin-top: 60px;
+  margin-top: 80px;
   padding: 14px 0px;
   @include xsm {
     // display: flex;
@@ -548,7 +548,7 @@ body {
     .dealsMenu-top {
       list-style: none;
       display: flex;
-      gap: 20px;
+      gap: 10px;
       margin: 0px auto;
       overflow: hidden;
       width: 100%;
@@ -564,7 +564,7 @@ body {
         font-family: var(--fontQuicksandSB);
         color: var(--textclr2);
         cursor: pointer;
-        gap: 20px;
+        gap: 8px;
         &:hover {
           animation-play-state: paused;
         }
@@ -609,6 +609,173 @@ body {
       }
     }
   }
+}
+.cart-ofcanvas{
+  // Cart Items
+
+.cart-Itemlists {
+  // margin-top: 60px;
+  width: 100%;
+
+  .canvass-title {
+  }
+
+  .cart-lists-body {
+    .cartNameTItle {
+      display: flex;
+      list-style-type: none;
+      justify-content: space-between;
+      margin: 0;
+      padding: 0;
+      padding-bottom: 30px;
+      .cartTitle {
+        font-family: "Sf-M";
+      }
+      .closeIcons {
+        width: 26px;
+      }
+    }
+    .total-prices {
+      display: flex;
+      justify-content: center;
+      font-size: 15px;
+      font-family: "SF-R";
+    }
+
+    .items-below {
+      display: flex;
+      padding-bottom: 13px;
+      border-bottom: 1px solid #f6f6f6;
+
+      .Itemimage-left {
+        height: 125px;
+        width: 110px;
+
+        @include xsm {
+          height: 111px;
+          width: 100px;
+        }
+
+        .cart-item-imag {
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+          object-fit: contain;
+        }
+      }
+
+      .rightItem-content {
+        margin-left: 15px;
+
+        .cart-ItemTitle {
+          font-size: 14px;
+          font-family: "SF-R";
+          margin-bottom: 10px;
+
+          &:hover {
+            color: #ffc346;
+            cursor: pointer;
+          }
+
+          @include xsm {
+            font-size: 14px;
+          }
+        }
+
+        .price {
+          font-size: 13px;
+          font-family: "SF-R";
+          margin-bottom: 2px;
+          color: #606060;
+          color: #282c3f;
+        }
+
+        .Cartiteem-price {
+          font-size: 18px;
+          font-family: "SF-M";
+          margin-bottom: 2px;
+          color: #272727;
+
+          @include xsm {
+            font-size: 16px;
+          }
+        }
+
+        .remove-increment {
+          display: flex;
+          justify-content: space-between;
+
+          .left-increment {
+            font-family: "SF-M";
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            .minusIcons {
+              width: 16px;
+            }
+            .PlusIcons {
+              width: 13px;
+            }
+            .addSubtract-btn {
+              background-color: transparent;
+              border: none;
+              font-family: "SF-R";
+              font-size: 15px;
+
+              .deleteIcons {
+                color: #272727;
+              }
+            }
+
+            .numer-of {
+              font-size: 14px;
+              font-family: "SF-R";
+              margin: 0px 5px;
+            }
+          }
+
+          .right-remove {
+            .rmove-btn {
+              font-family: "SF-M";
+              background-color: transparent;
+              border: none;
+              color: #03284f;
+              font-size: 13px;
+              .IconsImgsDelete {
+                width: 20px;
+              }
+              @include xsm {
+                font-size: 12px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .buttonsCart {
+      display: flex;
+      justify-content: center;
+      .viewCrt-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        width: 210px;
+        height: 44px;
+        color: #262626;
+        font-size: 15px;
+        border-radius: 5px;
+        background: #ffc346;
+        font-family: "SF-M";
+        border: none;
+        margin-left: 20px;
+        margin: auto;
+        position: absolute;
+        bottom: 22px;
+      }
+    }
+  }
+}
 }
 
 // login popup css//
@@ -2806,6 +2973,20 @@ body {
         }
       }
     }
+   
+  }
+  .clear-all-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ffc346;
+    width: 100%;
+    color: #000;
+    font-size: 12px;
+    height: 40px;
+    font-family: Sf-R;
+    border-radius: 5px;
+    border: none;
   }
 }
 .selectedProducts {

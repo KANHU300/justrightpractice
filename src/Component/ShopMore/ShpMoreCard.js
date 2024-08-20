@@ -7,8 +7,8 @@ import ApiNames from "../../Constants/ApiUrls";
 const ShpMoreCard = () => {
   let navigation = useNavigate();
   const [getItems, setItems] = useState([]);
-  const [titleTwo, setTitleTwo] = useState([]);
-  const [titleThree, setTitleThree] = useState([]);
+  const [titleTwo, setTitleTwo] = useState('');
+  const [titleThree, setTitleThree] = useState('');
   useEffect(() => {
     const getMoreReason = async () => {
       try {

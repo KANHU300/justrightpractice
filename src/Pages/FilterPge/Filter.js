@@ -6,64 +6,130 @@ import { useParams } from "react-router-dom";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import Accordion from "react-bootstrap/Accordion";
-import Form from "react-bootstrap/Form";
+// import Form from "react-bootstrap/Form";
 import { useEffect, useState } from "react";
 import ProductItems from "../../Component/ProductItems/ProductItems";
+import { useCart } from "../../Context/cartcontext";
 
 const Filter = () => {
-  const [filterprduct,setFilterproduct] = useState([])
+  const [filterprduct, setFilterproduct] = useState([]);
   const { id, type } = useParams();
-  const [pricechange ,setPricechange] = useState ([10,90])
+  const [pricechange, setPricechange] = useState([8, 116]);
+  const { updateCart } = useCart();
+  const [fetchfilter, setFetchfilter] = useState("Sort by Price");
+  const [sortby, setSortby] = useState();
+  const [filterList, setFilterList] = useState([]);
+  const [filterRange, setFilterRange] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState([]);
   // console.log(id,type)
-  useEffect(()=>{
-    const filterproducts = async()=>{
-
-      let filterBody ={
+  useEffect(() => {
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  }, [id, type]);
+  useEffect(() => {
+    const filterproducts = async () => {
+      let filterBody = {
         type: type,
-        id:id,
-        filters:[]
-      }
+        id: id,
+        sort: sortby,
+        filters: selectedFilter,
+      };
+      console.log(filterBody);
       try {
         let url = ApiNames.filterProducts;
-        const response = await Axios.post(url,filterBody);
-        
-      const  productlist = response.data.products;
-      console.log(productlist)
-      setFilterproduct(productlist);
-      
-       
-        
+        const response = await Axios.post(url, filterBody);
+
+        const productlist = response.data.products;
+        console.log(productlist);
+        setFilterproduct(productlist);
       } catch (error) {
-        
+        console.log(error);
       }
+    };
+    filterproducts();
+  }, [id, type, updateCart, sortby, selectedFilter]);
+  useEffect(() => {
+    const filterList = async () => {
+      let filterListBody = {
+        type: type,
+        id: id,
+        sort: pricechange,
+        filters: [],
+      };
 
-    }
-    filterproducts ()
-  },[id, type])
+      try {
+        let url = ApiNames.filtersList;
+        const response = await Axios.post(url, filterListBody);
+        console.log(response.data);
+        setFilterList(response.data.filtersList);
+        setFilterRange(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-  const handlePriceChange = (value) =>{
-    setPricechange(value)
-  }
+    filterList();
+  }, [type, id]);
+
+  const handlePriceChange = (value) => {
+    setPricechange(value);
+
+    // Update the selectedFilter with the new price range
+    setSelectedFilter((prevFilters) => {
+      const updatedFilters = prevFilters.filter(
+        (filter) => filter.key !== "startPrice" && filter.key !== "endPrice"
+      );
+
+      return [
+        ...updatedFilters,
+        { key: "startPrice", value: value[0] },
+        { key: "endPrice", value: value[1] },
+      ];
+    });
+  };
+  const fetFilterProducts = (filterType, displayText) => {
+    console.log(`Fetching products sorted by ${filterType}`);
+
+    setFetchfilter(displayText);
+  };
+  const addfilters = (value, keyName) => {
+    setSelectedFilter((prevFilter) => {
+      const existingFilterIndex = prevFilter.findIndex(
+        (filter) => filter.key === keyName && filter.value === value
+      );
+
+      if (existingFilterIndex >= 0) {
+        // Remove the filter if it's already selected
+        const newFilters = [...prevFilter];
+        newFilters.splice(existingFilterIndex, 1);
+        return newFilters;
+      } else {
+        // Add the new filter
+        return [...prevFilter, { key: keyName, value: value }];
+      }
+    });
+  };
 
   return (
     <div>
-      <div className="container">
+      <div className="container-fluid">
         <div className="filterSections-below">
           <div className="mid-products"></div>
         </div>
         <div className="row">
-          {/* <button className="filter-btns">
-        <i className="fas fa-filter"></i>Filters
-      </button> */}
           <div className="col-md-3 filterSwich">
             <div className="filterSection">
               <div className="filterByPrice">Filter by Price</div>
               <Slider
                 className="range-slidess"
                 range
-                min={10}
-                max={90}
+                min={filterRange.minSellingPrice}
+                max={filterRange.maxSellingPrice}
                 // defaultValue={[10, 10]}
+                value={pricechange}
                 onChange={handlePriceChange}
               />
               <div className="slidePrices">
@@ -75,99 +141,85 @@ const Filter = () => {
                 </label>
               </div>
               <div className="accordionSection">
-                {/* <div className="accordion accordionBox" id="accordionPanelsStayOpenExample">
-                         
-                            <div className="accordion-item acd-items" >
-                              <h2 className="accordion-header">
-                                <button
-                                  className={`accordion-button acd-buttons ${openIndexes.includes(index) ? '' : 'collapsed'}`}
-                                  type="button"
-                                  onClick={() => toggleAccordion(index)}
-                                  aria-expanded={openIndexes.includes(index) ? 'true' : 'false'}
-                                >
-                                  {item?.key}
-                                </button>
-                              </h2>
-                              <div className={`accordion-collapse collapse ${openIndexes.includes(index) ? 'show' : ''}`}>
-                                <div className="accordion-body acd-content">
-                                  {item?.values?.map((value, i) => (
-                                    <div key={i} className="form-check">
-                                      <input
-                                        className="form-check-input form-check-Data"
-                                        type="checkbox"
-                                        value={value.value}
-                                        id={value.value}
-                                        checked={selectedFilters.some((filter) => filter.key === item.key && filter.value === value.value)}
-                                        onChange={() => handleFilterSelect(value.value, item.key)}
-                                      />
-                                      <label className="form-check-label" htmlFor={value.value}>
-                                        {value.value} ({value.count})
-                                      </label>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                      
-                        </div> */}
-
                 <Accordion
                   defaultActiveKey="0"
                   className="accordionBox"
                   alwaysOpen
                 >
-                  <Accordion.Item className="acd-items" eventKey="0">
-                    <Accordion.Header>color</Accordion.Header>
-                    <Accordion.Body className=" acd-content">
-                      {["red", "pink", "orange"].map((type, index) => (
-                        <div key={`${type}`} className="mb-3">
-                          <Form.Check // prettier-ignore
-                            type={type}
-                            id={`${type}`}
-                            label={type}
-                          />
-                        </div>
-                      ))}
-                    </Accordion.Body>
-                  </Accordion.Item>
-                  <Accordion.Item eventKey="1">
-                    <Accordion.Header>Brand</Accordion.Header>
-                    <Accordion.Body>
-                      {["samsung", "apple", "orange"].map((type, index) => (
-                        <div key={`${type}`} className="mb-3">
-                          <Form.Check // prettier-ignore
-                            type={type}
-                            id={`${type}`}
-                            label={` ${type} `}
-                          />
-                        </div>
-                      ))}
-                    </Accordion.Body>
-                  </Accordion.Item>
+                  {filterList.map((item, index) => (
+                    <Accordion.Item
+                      className="acd-items"
+                      key={index}
+                      eventKey={index}
+                    >
+                      <Accordion.Header className="acd-buttons">{item.key}</Accordion.Header>
+                      <Accordion.Body className=" acd-content">
+                        {item?.values?.map((value, i) => (
+                          <div className="form-check" key={i}>
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              value={value.value}
+                              id={value.value}
+                              checked={selectedFilter.some(
+                                (filter) =>
+                                  filter.key === item.key &&
+                                  filter.value === value.value
+                              )}
+                              onChange={() => addfilters(value.value, item.key)} // Add this line
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor={value.value}
+                            >
+                              {value.value}({value.count})
+                            </label>
+                          </div>
+                        ))}
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  ))}
                 </Accordion>
               </div>
-              <button className="clear-all-btn">Clear All</button>
+              <button
+                onClick={() => setSelectedFilter([])}
+                className="clear-all-btn"
+              >
+                Clear All
+              </button>
             </div>
           </div>
           <div className="col-md-9">
+           
             <div className="selectedProducts">
-              <div className="selectedFilters">
-                <div className="filterName">
-                  Category: Category 1<span className="closeIcon">×</span>
-                </div>
+            {
+              selectedFilter.length > 0 && ( <div className="selectedFilters">
+                {selectedFilter.map((value, i) => (
+                  <div className="filterName" key={i}>
+                    <label     onClick={() => addfilters(value.value, value.key)}> {value.key}: {value.value}
+                    <span className="closeIcon">×</span></label>
+                   
+                  </div>
+                ))}
+
                 <label className="clearAllBtn">
                   <span>
                     <img
                       src="/images/menubar/filter-x.svg"
                       className="closeIcon"
+                      alt=".."
                     />
                   </span>
                   Clear Filters
                 </label>
-              </div>
+              </div>)
+            }
+             
               <div className="TotalProducts">
                 <label className="foundedproducts">
-                  We found <span className="counting">{filterprduct.length}</span> items for you!
+                  We found
+                  <span className="counting">{filterprduct.length}</span> items
+                  for you!
                 </label>
                 <div className="right-relevance">
                   <Dropdown className="relvence-Ddown">
@@ -179,7 +231,7 @@ const Filter = () => {
                       <span className="upDwn-arrw">
                         {/* <img src="/images/range.svg" className="ranges" /> */}
                         <span className="relvance-filterTitle">
-                          low to high
+                          {fetchfilter}
                         </span>
                       </span>
                       {/* <span className="upArrow-Icn">
@@ -188,27 +240,42 @@ const Filter = () => {
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu className="Relvence-Top">
-                      <Dropdown.Item className="relvence-Dropitems" on>
+                      <Dropdown.Item
+                        className="relvence-Dropitems"
+                        onClick={() =>
+                          fetFilterProducts(
+                            "pricelowtOHigh",
+                            "Price: Low to High",
+                            setSortby(1)
+                          )
+                        }
+                      >
                         Price: Low to High
                       </Dropdown.Item>
-                      <Dropdown.Item className="relvence-Dropitems">
+                      <Dropdown.Item
+                        className="relvence-Dropitems"
+                        onClick={() =>
+                          fetFilterProducts(
+                            "priceHightOLow",
+                            "Price: High to Low",
+                            setSortby(-1)
+                          )
+                        }
+                      >
                         Price: High to Low
                       </Dropdown.Item>
-                      {/* <Dropdown.Item onClick={() => fetFilterProducts('lowTohighRating')} className="relvence-Dropitems" >Rating: Low to High</Dropdown.Item>
-                                <Dropdown.Item onClick={() => fetFilterProducts('highTolowRating')} className="relvence-Dropitems" >Rating: High to Low</Dropdown.Item> */}
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
               </div>
               <div className="product-items">
-              <ProductItems productObj={filterprduct}  />
-
+                <ProductItems productObj={filterprduct} />
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="offcanvas offcanvas-bottom" id="offcanvasBottom">
+      {/* <div className="offcanvas offcanvas-bottom" id="offcanvasBottom">
         <div className="offcanvas-header">
           <button
             type="button"
@@ -256,7 +323,7 @@ const Filter = () => {
                           value="category1"
                           id="category1"
                         />
-                        <label className="form-check-label" for="category1">
+                        <label className="form-check-label" htmlFor="category1">
                           Category 1
                         </label>
                       </div>
@@ -267,7 +334,7 @@ const Filter = () => {
                           value="category2"
                           id="category2"
                         />
-                        <label className="form-check-label" for="category2">
+                        <label className="form-check-label" htmlFor="category2">
                           Category 2
                         </label>
                       </div>
@@ -279,7 +346,7 @@ const Filter = () => {
             <button className="clear-all-btn">Clear All</button>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

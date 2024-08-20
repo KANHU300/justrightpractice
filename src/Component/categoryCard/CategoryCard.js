@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+
 import { Navigate, useNavigate } from "react-router-dom";
 import Axios from '../../Utils/AxiosConfi';
 import ApiNames from "../../Constants/ApiUrls";
@@ -16,7 +16,7 @@ const CategoryCard = () => {
           `${url}`
         );
         setCategory(response.data);
-        console.log(response.data)
+        // console.log(response.data)
       } catch (error) {
         console.log(error);
       }

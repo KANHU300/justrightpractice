@@ -31,16 +31,17 @@ const ProductView = () => {
 
   const {addToCart} = useCart();
   
-  const handleAddtoCart = () =>{
-    const id = 'productId';
-    const type = 'product_type';
-    addToCart(id,type)
-
-  }
+  const handleAddtoCart = () => {
+    
+    const id = productId;
+    const type = 1;
+    const qty = quantity;
+    console.log('Adding to cart:', { id, type, qty });
+    addToCart(id, type, qty);
+  };
 
   useEffect(() => {
-    // Fetch the product details using the productId
-    // This is just an example, replace it with your actual data fetching logic
+    
     const fetchProduct = async () => {
       try {
         let url = ApiNames.getProductById;
@@ -59,7 +60,7 @@ const ProductView = () => {
     };
 
     fetchProduct();
-  }, [productId]);
+  }, []);
   useEffect(() => {
     window.scroll({
       top: 0,
@@ -77,18 +78,18 @@ const ProductView = () => {
   //   return <div>Loading...</div>;
   // }
   
-    async function getTwoCategories() {
-      let api = ApiNames.getShowCategory
+    // async function getTwoCategories() {
+    //   let api = ApiNames.getShowCategory
   
-      try {
-        const response = await Axios.get(`${api}`);
+    //   try {
+    //     const response = await Axios.get(`${api}`);
   
-        setTwoCategories(response.data.slice(0, 2))
-      } catch (error) {
-        console.log(error)
-      }
+    //     setTwoCategories(response.data.slice(0, 2))
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
      
-    };
+    // };
     // getTwoCategories();
 
     const increment = () => {
@@ -102,6 +103,13 @@ const ProductView = () => {
         setQuantity(prevQuantity => prevQuantity - 1);
       }
     };
+//     const handlechange = (e) =>{
+// value = e.target.value
+//   // Validate that the value is a number and within the stock range
+//   if (!isNaN(value) && value > 0 && value <= getProduct.availableStock) {
+//     setQuantity(parseInt(value, 10));
+//   }
+//     }
 
   return (
     <>
@@ -179,7 +187,7 @@ const ProductView = () => {
                 <div className="about-details">
                   <p className="item-para">{getProduct.title}</p>
                   <div className="cost-details">
-                    <p className="cost-offer">
+                    <div className="cost-offer">
                       {/* <del>  {getProduct.marketPrice} AED</del>{" "} */}
                       <p className="marketPrice">
                         <span className="disocunt">-{getProduct.discount}%</span>
@@ -191,7 +199,7 @@ const ProductView = () => {
                           {getProduct.marketPrice} AED
                         </span>
                       </p>
-                    </p>
+                    </div>
                   </div>
                   <p className="inclusiveline">Inclusive of VAT</p>
                   {/* <p className="termsPrice">(As Per Terms Price: {getProduct.sellingPrice})</p> */}
@@ -216,6 +224,8 @@ const ProductView = () => {
                                 type="tel"
                                 value={quantity}
                                 maxLength={4}
+                                onChange={(e) => setQuantity(e.target.value)}
+                                
                                 
                               />
                             </div>
